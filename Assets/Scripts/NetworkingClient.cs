@@ -1,0 +1,141 @@
+using System;
+using System.Net.WebSockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class NetworkingClient : MonoBehaviour
+{
+    public static NetworkingClient Instance { get; private set; }
+    public static event Action<string> OnMessageReceived;
+
+    private ClientWebSocket clientSocket;
+    private CancellationTokenSource cancelSource;
+    public string uri = "ws://localhost:3000";
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public async void Connect(string username)
+    {
+        clientSocket = new ClientWebSocket();
+        cancelSource = new CancellationTokenSource();
+
+        try
+        {
+            await clientSocket.ConnectAsync(new Uri(uri), cancelSource.Token);
+            await SendJson($"{{\"type\":\"set_username\",\"username\":\"{username}\"}}");
+            _ = ReceiveLoop();
+            SceneManager.LoadScene(1);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("WebSocket connection error: " + ex.Message);
+        }
+    }
+
+    public async void Disconnect()
+    {
+        if (clientSocket == null || clientSocket.State != WebSocketState.Open)
+            return;
+
+        try
+        {
+            cancelSource?.Cancel();
+
+            await clientSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client closing", CancellationToken.None);
+            clientSocket.Dispose();
+            clientSocket = null;
+
+            cancelSource.Dispose();
+            cancelSource = null;
+
+            SceneManager.LoadScene(0);
+        }
+        catch (Exception ex)
+        {
+            Debug.Log("Error disconnecting: " + ex.Message);
+        }
+    }
+
+    public async Task CreateRoom(string roomName)
+    {
+        await SendJson($"{{\"type\":\"create_room\",\"room\":\"{roomName}\"}}");
+    }
+
+    public async Task JoinRoom(string roomName)
+    {
+        await SendJson($"{{\"type\":\"join_room\",\"room\":\"{roomName}\"}}");
+    }
+
+    public async Task SendChatMessage(string text)
+    {
+        await SendJson($"{{\"type\":\"chat\",\"message\":\"{text}\"}}");
+    }
+
+    private async Task SendJson(string json)
+    {
+        if (clientSocket == null || clientSocket.State != WebSocketState.Open)
+            return;
+
+        byte[] buffer = Encoding.UTF8.GetBytes(json);
+        await clientSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, cancelSource.Token);
+    }
+
+    private async Task ReceiveLoop()
+    {
+        byte[] buffer = new byte[1024];
+
+        while (clientSocket != null && clientSocket.State == WebSocketState.Open)
+        {
+            try
+            {
+                var result = await clientSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancelSource.Token);
+
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await clientSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Server closed", CancellationToken.None);
+                    break;
+                }
+
+                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                Debug.Log("Received: " + message);
+
+                var data = JsonUtility.FromJson<ChatPacket>(message);
+                if (data.type == "chat")
+                {
+                    OnMessageReceived?.Invoke($"{data.username}: {data.message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Receive error: " + ex.Message);
+                break;
+            }
+        }
+    }
+
+    [Serializable]
+    private class ChatPacket
+    {
+        public string type;
+        public string username;
+        public string message;
+    }
+
+    private void OnApplicationQuit()
+    {
+        Disconnect();
+    }
+}
