@@ -29,6 +29,11 @@ public class NetworkingClient : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    private async void Update()
+    {
+        // await RequestClientList();
+    }
+
     public async void Connect(string username)
     {
         clientSocket = new ClientWebSocket();
@@ -74,13 +79,11 @@ public class NetworkingClient : MonoBehaviour
     public async Task CreateRoom(string roomName)
     {
         await SendJson($"{{\"type\":\"create_room\",\"room\":\"{roomName}\"}}");
-        await RequestClientList();
     }
 
     public async Task JoinRoom(string roomName)
     {
         await SendJson($"{{\"type\":\"join_room\",\"room\":\"{roomName}\"}}");
-        await RequestClientList();
     }
 
     public async Task SendChatMessage(string text)

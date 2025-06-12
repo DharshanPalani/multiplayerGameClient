@@ -17,13 +17,13 @@ public class ClientSide : MonoBehaviour
 
     private void Start()
     {
-        NetworkingClient.OnMessageReceived += AppendChat;
+        // NetworkingClient.OnMessageReceived += AppendChat;
         NetworkingClient.OnClientJoin += AppendClientName;
     }
 
     private void OnDestroy()
     {
-        NetworkingClient.OnMessageReceived -= AppendChat;
+        // NetworkingClient.OnMessageReceived -= AppendChat;
         NetworkingClient.OnClientJoin -= AppendClientName;
     }
 
@@ -39,19 +39,7 @@ public class ClientSide : MonoBehaviour
         NetworkingClient.Instance.Connect(username);
     }
 
-    public void OnSendMessagePress()
-    {
-        if (string.IsNullOrWhiteSpace(_messageInputField.text))
-        {
-            Debug.Log("Enter a msg.");
-            return;
-        }
-
-        string message = _messageInputField.text;
-        _messageInputField.text = "";
-
-        _ = NetworkingClient.Instance.SendChatMessage(message);
-    }
+    
 
     public void OnDisconnectPress()
     {

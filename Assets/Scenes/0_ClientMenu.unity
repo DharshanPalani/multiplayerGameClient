@@ -448,7 +448,7 @@ GameObject:
   - component: {fileID: 603322072}
   - component: {fileID: 603322073}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: Client
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -478,11 +478,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 603322070}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6581738bb2f3ae59a963fef7d1a01c7, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e847f59c07054769904a5b331a96790, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputField: {fileID: 690486066}
-  username: Sybau
+  _usernameInputField: {fileID: 690486066}
 --- !u!1 &690486064
 GameObject:
   m_ObjectHideFlags: 0
@@ -876,7 +875,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 603322073}
-        m_TargetAssemblyTypeName: ClientSide, Assembly-CSharp
+        m_TargetAssemblyTypeName: ClientMenu, Assembly-CSharp
         m_MethodName: OnConnectPress
         m_Mode: 1
         m_Arguments:
