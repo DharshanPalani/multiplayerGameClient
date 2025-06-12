@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,7 @@ public class NetworkingClient : MonoBehaviour
 {
     public static NetworkingClient Instance { get; private set; }
     public static event Action<string> OnMessageReceived;
+    public static event Action<List<string>> OnClientJoin;
 
     private ClientWebSocket clientSocket;
     private CancellationTokenSource cancelSource;
@@ -72,11 +74,13 @@ public class NetworkingClient : MonoBehaviour
     public async Task CreateRoom(string roomName)
     {
         await SendJson($"{{\"type\":\"create_room\",\"room\":\"{roomName}\"}}");
+        await RequestClientList();
     }
 
     public async Task JoinRoom(string roomName)
     {
         await SendJson($"{{\"type\":\"join_room\",\"room\":\"{roomName}\"}}");
+        await RequestClientList();
     }
 
     public async Task SendChatMessage(string text)
@@ -117,6 +121,18 @@ public class NetworkingClient : MonoBehaviour
                 {
                     OnMessageReceived?.Invoke($"{data.username}: {data.message}");
                 }
+                else if (data.type == "client_list")
+                {
+                    var clientList = JsonUtility.FromJson<ClientListPacket>(message);
+
+                    List<string> usernames = new List<string>();
+                    foreach (var client in clientList.clients)
+                    {
+                        usernames.Add(client.username);
+
+                    }
+                        OnClientJoin?.Invoke(usernames);
+                }
             }
             catch (Exception ex)
             {
@@ -126,6 +142,12 @@ public class NetworkingClient : MonoBehaviour
         }
     }
 
+    public async Task RequestClientList()
+    {
+        await SendJson("{\"type\":\"get_clients\"}");
+    }
+
+
     [Serializable]
     private class ChatPacket
     {
@@ -133,6 +155,22 @@ public class NetworkingClient : MonoBehaviour
         public string username;
         public string message;
     }
+
+    [Serializable]
+    private class ClientListPacket
+    {
+        public string type;
+        public string room;
+        public ClientInfo[] clients;
+    }
+
+    [Serializable]
+    private class ClientInfo
+    {
+        public string username;
+        public bool hasGuessedWord;
+    }
+
 
     private void OnApplicationQuit()
     {
