@@ -746,8 +746,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 926789093}
-  - component: {fileID: 926789094}
   - component: {fileID: 926789095}
+  - component: {fileID: 926789096}
   m_Layer: 0
   m_Name: Client
   m_TagString: Untagged
@@ -770,24 +770,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &926789094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 926789092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6581738bb2f3ae59a963fef7d1a01c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _inputField: {fileID: 0}
-  _roomInputField: {fileID: 0}
-  _messageInputField: {fileID: 1001635257}
-  _chatLog: {fileID: 0}
-  _clientList: {fileID: 786115040}
-  username: Sybau
 --- !u!114 &926789095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -802,6 +784,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _chatLog: {fileID: 1184477128}
   _messageInputField: {fileID: 1001635257}
+--- !u!114 &926789096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926789092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4722a01c640054f3b58f77a5ef9f404, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _clientList: {fileID: 0}
 --- !u!1 &950343648
 GameObject:
   m_ObjectHideFlags: 0
