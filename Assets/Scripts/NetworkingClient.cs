@@ -117,7 +117,6 @@ public class NetworkingClient : MonoBehaviour
                 }
 
                 string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                Debug.Log("Received: " + message);
 
                 var data = JsonUtility.FromJson<ChatPacket>(message);
                 if (data.type == "chat")
@@ -134,8 +133,26 @@ public class NetworkingClient : MonoBehaviour
                         usernames.Add(client.username);
 
                     }
-                        OnClientJoin?.Invoke(usernames);
+                    OnClientJoin?.Invoke(usernames);
                 }
+                else if (data.type == "draw")
+                {
+                    var draw = JsonUtility.FromJson<DrawPacket>(message);
+                    
+                    DrawingBoard board = FindObjectOfType<DrawingBoard>();
+                    if (board != null)
+                    {
+                        Color color;
+                        ColorUtility.TryParseHtmlString(draw.color, out color);
+                        board.DrawRemoteStroke(
+                            new Vector2(draw.x0, draw.y0),
+                            new Vector2(draw.x1, draw.y1),
+                            color,
+                            draw.size
+                        );
+                    }
+                }
+
             }
             catch (Exception ex)
             {
@@ -149,6 +166,23 @@ public class NetworkingClient : MonoBehaviour
     {
         await SendJson("{\"type\":\"get_clients\"}");
     }
+
+    public async Task SendDrawData(Vector2 from, Vector2 to, Color color, int size)
+    {
+        DrawPacket packet = new DrawPacket
+        {
+            x0 = from.x,
+            y0 = from.y,
+            x1 = to.x,
+            y1 = to.y,
+            color = "#" + ColorUtility.ToHtmlStringRGB(color),
+            size = size
+        };
+
+        string json = JsonUtility.ToJson(packet);
+        await SendJson(json);
+    }
+
 
 
     [Serializable]
@@ -166,6 +200,16 @@ public class NetworkingClient : MonoBehaviour
         public string room;
         public ClientInfo[] clients;
     }
+
+    [Serializable]
+    public class DrawPacket
+    {
+        public string type = "draw";
+        public float x0, y0, x1, y1;
+        public string color;
+        public int size;
+    }
+
 
     [Serializable]
     private class ClientInfo
