@@ -613,7 +613,7 @@ GameObject:
   - component: {fileID: 786115041}
   - component: {fileID: 786115040}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ClientList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -796,7 +796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4722a01c640054f3b58f77a5ef9f404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _clientList: {fileID: 0}
+  _clientList: {fileID: 786115040}
 --- !u!1 &950343648
 GameObject:
   m_ObjectHideFlags: 0
