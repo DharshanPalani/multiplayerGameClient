@@ -155,6 +155,10 @@ public class NetworkingClient : MonoBehaviour
                 {
                     SceneManager.LoadScene(2);
                 }
+                else if (data.type == "assign_artist")
+                {
+                    FindObjectOfType<DrawingBoard>().role = PlayerRole.Artist;
+                }
 
             }
             catch (Exception ex)
