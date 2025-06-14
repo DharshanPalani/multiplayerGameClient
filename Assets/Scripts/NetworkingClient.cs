@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Text;
@@ -155,10 +156,12 @@ public class NetworkingClient : MonoBehaviour
                 {
                     SceneManager.LoadScene(2);
                 }
+
                 else if (data.type == "assign_artist")
                 {
-                    FindObjectOfType<DrawingBoard>().role = PlayerRole.Artist;
+                    StartCoroutine(sendArtistData(data.word));
                 }
+
 
             }
             catch (Exception ex)
@@ -198,6 +201,7 @@ public class NetworkingClient : MonoBehaviour
         public string type;
         public string username;
         public string message;
+        public string word;
     }
 
     [Serializable]
@@ -229,5 +233,13 @@ public class NetworkingClient : MonoBehaviour
     private void OnApplicationQuit()
     {
         Disconnect();
+    }
+
+    private IEnumerator sendArtistData(string word)
+    {
+        yield return new WaitForSeconds(0.5f);
+        DrawingBoard drawingBoard = FindObjectOfType<DrawingBoard>();
+        drawingBoard.role = PlayerRole.Artist;
+        drawingBoard.setDrawingWord(word);
     }
 }

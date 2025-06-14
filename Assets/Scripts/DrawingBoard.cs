@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,8 @@ public class DrawingBoard : MonoBehaviour
     public Color brushColor = Color.black;
     public RawImage drawArea;
     public PlayerRole role = PlayerRole.Guesser;
+
+    public TMP_Text drawingWord;
 
     private Texture2D drawTexture;
     private Vector2 lastPos;
@@ -68,6 +71,12 @@ public class DrawingBoard : MonoBehaviour
             Mathf.Clamp(x, 0, textureWidth - 1),
             Mathf.Clamp(y, 0, textureHeight - 1)
         );
+    }
+
+    public void setDrawingWord(string word)
+    {
+        drawingWord.text = "Assigned word:" + word;
+        Debug.Log("Assigned word is " + word);
     }
 
     public void DrawLine(int x0, int y0, int x1, int y1, Color color, int size)
