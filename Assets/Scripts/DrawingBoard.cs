@@ -5,15 +5,12 @@ public enum PlayerRole { Artist, Guesser }
 
 public class DrawingBoard : MonoBehaviour
 {
-    [Header("Settings")]
     public int textureWidth = 1024;
     public int textureHeight = 1024;
     public int brushSize = 8;
     public Color brushColor = Color.black;
     public RawImage drawArea;
-
-    [Header("Player Role")]
-    public PlayerRole role = PlayerRole.Guesser; // Default to guesser
+    public PlayerRole role = PlayerRole.Guesser;
 
     private Texture2D drawTexture;
     private Vector2 lastPos;
@@ -47,10 +44,7 @@ public class DrawingBoard : MonoBehaviour
         {
             Vector2 currentPos = GetMouseLocalPosition(Input.mousePosition);
             DrawLine((int)lastPos.x, (int)lastPos.y, (int)currentPos.x, (int)currentPos.y, brushColor, brushSize);
-
-            // 🔌 Send this stroke to the server
-            _ = NetworkingClient.Instance.SendDrawData(lastPos, currentPos, brushColor, brushSize);
-
+            NetworkingClient.Instance.SendDrawData(lastPos, currentPos, brushColor, brushSize);
             lastPos = currentPos;
             drawTexture.Apply();
         }
@@ -122,9 +116,6 @@ public class DrawingBoard : MonoBehaviour
         drawTexture.Apply();
     }
 
-    /// <summary>
-    /// Used by remote users to draw incoming strokes from the network.
-    /// </summary>
     public void DrawRemoteStroke(Vector2 start, Vector2 end, Color color, int size)
     {
         DrawLine((int)start.x, (int)start.y, (int)end.x, (int)end.y, color, size);

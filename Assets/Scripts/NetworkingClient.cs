@@ -29,11 +29,6 @@ public class NetworkingClient : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    private async void Update()
-    {
-        // await RequestClientList();
-    }
-
     public async void Connect(string username)
     {
         clientSocket = new ClientWebSocket();
@@ -90,6 +85,10 @@ public class NetworkingClient : MonoBehaviour
     {
         await SendJson($"{{\"type\":\"chat\",\"message\":\"{text}\"}}");
     }
+    public async void StartGame(string text = "host")
+    {
+        await SendJson($"{{\"type\":\"request_start\",\"host\":\"{text}\"}}");
+    }
 
     private async Task SendJson(string json)
     {
@@ -138,7 +137,7 @@ public class NetworkingClient : MonoBehaviour
                 else if (data.type == "draw")
                 {
                     var draw = JsonUtility.FromJson<DrawPacket>(message);
-                    
+
                     DrawingBoard board = FindObjectOfType<DrawingBoard>();
                     if (board != null)
                     {
@@ -151,6 +150,10 @@ public class NetworkingClient : MonoBehaviour
                             draw.size
                         );
                     }
+                }
+                else if (data.type == "start_game")
+                {
+                    SceneManager.LoadScene(2);
                 }
 
             }
@@ -167,7 +170,7 @@ public class NetworkingClient : MonoBehaviour
         await SendJson("{\"type\":\"get_clients\"}");
     }
 
-    public async Task SendDrawData(Vector2 from, Vector2 to, Color color, int size)
+    public void SendDrawData(Vector2 from, Vector2 to, Color color, int size)
     {
         DrawPacket packet = new DrawPacket
         {
@@ -180,7 +183,7 @@ public class NetworkingClient : MonoBehaviour
         };
 
         string json = JsonUtility.ToJson(packet);
-        await SendJson(json);
+        _ = SendJson(json);
     }
 
 

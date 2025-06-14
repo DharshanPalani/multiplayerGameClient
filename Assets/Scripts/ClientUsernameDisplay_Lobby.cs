@@ -18,7 +18,7 @@ public class ClientUsernameDisplay_Lobby : MonoBehaviour
         NetworkingClient.OnClientJoin += AppendClientName;
     }
 
-    void Oestroy()
+    void OnDestroy()
     {
         NetworkingClient.OnClientJoin -= AppendClientName;
     }

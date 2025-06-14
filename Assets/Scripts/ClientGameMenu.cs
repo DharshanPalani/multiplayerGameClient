@@ -13,7 +13,7 @@ public class ClientGameMenu : MonoBehaviour
         if (validateRoomInput())
         {
             _ = NetworkingClient.Instance.CreateRoom(_roomInputField.text);
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene(3);
         }
     }
 
@@ -22,7 +22,7 @@ public class ClientGameMenu : MonoBehaviour
         if (validateRoomInput())
         {
             _ = NetworkingClient.Instance.JoinRoom(_roomInputField.text);
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene(4);
         }
     }
 
